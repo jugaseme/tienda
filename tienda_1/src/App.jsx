@@ -11,6 +11,10 @@ function App() {
 
    const total = Cart.reduce((acc, item) => acc + item.price, 0)
 
+  const vaciarCarrito = () => {
+    setCart([])
+  }
+
   return (
     <>
       <div>
@@ -19,12 +23,27 @@ function App() {
         <ul>
           {products.map(products => (
             <li key={products.id}>
-              <strong>{products.name}</strong> - ${products.price.toLocaleString("es-CO")} 
-              <button onClick={()=> addToCart(products)}>Agregar al carrito</button>
+
+              <strong>{products.name} </strong>
+              <span className='precio'>${products.price.toLocaleString("es-CO")}</span>
+                <p>{products.category}</p>
+
+
+              <button
+               onClick={() => addToCart(products)}
+               disabled={Cart.some(item => item.id === products.id)}
+                >
+               Agregar
+              </button>
+
+
             </li>
           ))}
         </ul>
-            <h2>Total en el Carrito: ${total.toLocaleString("es-CO")}</h2>
+           <h2>Carrito: {Cart.length} productos</h2>
+          <h3>Total: ${total.toLocaleString("es-CO")}</h3>
+
+            <button onClick={vaciarCarrito}>Vaciar Carrito</button>
       </div>
     </>
   )
