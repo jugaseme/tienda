@@ -1,102 +1,74 @@
-import { useState } from 'react'
-import './App.css'
-import products from './data/productos'
+import { useState } from "react"
+import "./App.css"
+
+import ProductForm from "./componets/ProductFrom"
+import ProductList from "./componets/ProductList"
 
 function App() {
-const [products, setProducts] = useState([])
+  const [products, setProducts] = useState([])
+  const [cart, setCart] = useState([])
 
-const [name, setName] = useState("")
-const [price, setPrice] = useState("")
-const [category, setCategory] = useState("")
+  const [name, setName] = useState("")
+  const [price, setPrice] = useState("")
+  const [category, setCategory] = useState("")
 
+  const handleAddProduct = () => {
+    if (!name || !price || !category) return
 
-const handleAddProduct = () => {
-  if (name && price && category) {
     const newProduct = {
-      id: products.length + 1,
+      id: Date.now(),
       name,
-      price: parseFloat(price),
+      price: Number(price),
       category
     }
-    setProducts(prevProducts => [...prevProducts, newProduct])
+
+    setProducts(prev => [...prev, newProduct])
     setName("")
     setPrice("")
     setCategory("")
   }
-}
-  
 
-
-  const [Cart, setCart] = useState([])
-
-  const addToCart = (product) => {
-    setCart(prevCart => [...prevCart, product])
+  const handleDelete = (id) => {
+    setProducts(prev => prev.filter(p => p.id !== id))
   }
 
-   const total = Cart.reduce((acc, item) => acc + item.price, 0)
+  const addToCart = (product) => {
+    setCart(prev => [...prev, product])
+  }
 
   const vaciarCarrito = () => {
     setCart([])
   }
-  const handleDelete = (id) => {
-  setProducts(prev => prev.filter(p => p.id !== id))
-}
 
+  const total = cart.reduce((acc, item) => acc + item.price, 0)
 
   return (
-    <>
-      <div>
-        <h1>Catalogo De Tienda</h1>
-            <input 
-            type="text"
-            placeholder='Nombre del producto'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-             />
-            <input
-            type="number"
-            placeholder='Precio del producto'
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-             />
-            <input
-            type="text"
-            placeholder='Categoria del producto'
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-             />
-          <button onClick={handleAddProduct}>Agregar Producto</button>
+    <div>
+      <h1>Catálogo de Tienda</h1>
 
+      <ProductForm
+        name={name}
+        price={price}
+        category={category}
+        setName={setName}
+        setPrice={setPrice}
+        setCategory={setCategory}
+        onAdd={handleAddProduct}
+      />
 
+      <ProductList
+        products={products}
+        onDelete={handleDelete}
+        onAddToCart={addToCart}
+      />
 
+      <h2>Carrito: {cart.length} productos</h2>
+      <h3>Total: ${total.toLocaleString("es-CO")}</h3>
 
-       <ul>
-  {products.map(product => (
-    <li key={product.id}>
-      <strong>{product.name}</strong>
-      <span className="price">
-        ${product.price.toLocaleString("es-CO")}
-      </span>
-      <p>{product.category}</p>
-
-      <button onClick={() => handleDelete(product.id)}>
-        Eliminar
+      <button onClick={vaciarCarrito}>
+        Vaciar Carrito
       </button>
-      <button onClick={() => addToCart(product)}>
-        Agregar
-      </button>
-    </li>
-  ))}
-</ul>
-
-           <h2>Carrito: {Cart.length} productos</h2>
-          <h3>Total: ${total.toLocaleString("es-CO")}</h3>
-
-              
-
-            <button onClick={vaciarCarrito}>Vaciar Carrito</button>
-      </div>
-    </>
+    </div>
   )
 }
 
